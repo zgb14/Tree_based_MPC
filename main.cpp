@@ -15,6 +15,9 @@
 /*bug2 begin:sometimes "ออ"?  for "()" again
   bug2 end*/
 
+/*bug3 begin: Here must be "return NULL, the default is not NULL."
+  bug2 end*/
+
 //Bug log end
 
 #include<iostream>
@@ -34,7 +37,7 @@ int CA[N_max];
 vector <int> IDs;
 //The number of Child is between ChildNum1 and ChildNum2.
 const int ChildNum1 = 2;
-const int ChildNum2 = 5;
+const int ChildNum2 = 4;
 //the number of parties
 //const int NodeSum = 20;
 //all the data
@@ -56,10 +59,12 @@ public:
      Tree(int node_num);
 	 void AddNode(TreeNode *fathernode,int threshold);
 	 void Initialization(TreeNode *node);
+	 void Addition(TreeNode *root,int ID1,int ID2);
 private:
 	 int Ini_ChildNum();
 	 int Ini_CA_ID();
 	 int returnID();
+	 TreeNode* search_node(TreeNode *root,int ID);
 	 void AddBrotherNode(TreeNode* bro, TreeNode* node);
 	 void print_tree();
 private:
@@ -194,6 +199,141 @@ void Tree::AddNode(TreeNode *fathernode,int threshold)
 	}
 }
 
+//Find a node according to its ID and the calculation would not be included in the reality for the code is not for multiprocess.
+TreeNode* Tree::search_node(TreeNode *root,int ID)
+{
+	TreeNode *tempnode = new TreeNode;
+	tempnode = root;
+	while(1)
+	{
+		if(tempnode->ID == ID)
+		{
+			return tempnode;
+		}
+		else
+		{	
+			if(tempnode->nextsibling != NULL)
+			{
+				tempnode = tempnode->nextsibling;
+			}
+			else
+			{
+				//cout<<"Error: ID can not be found1."<<endl;
+				break;
+			}
+		}
+	}
+	tempnode = root;
+	while(1)
+	{
+		if(tempnode->firstchild != NULL)
+		{
+			if(search_node(tempnode->firstchild,ID) != NULL)
+			{
+				return search_node(tempnode->firstchild,ID);
+			}
+		}
+
+		if(tempnode->nextsibling != NULL)
+		{
+			tempnode = tempnode->nextsibling;
+		}
+		else
+		{
+			//cout<<"Error: ID can not be found2."<<endl;
+			//***Here must be "return NULL, the default is not NULL."
+			return NULL;
+		}
+	}
+}
+
+//additon process
+void Tree::Addition(TreeNode *root,int ID1,int ID2)
+{
+	if(ID1 != ID2)
+	{
+		int flag = 0;
+		for(int i=0;i<IDs.size();i++)
+		{
+			if(IDs[i]==ID1 || IDs[i]==ID2)
+				flag++;
+		}
+		if(flag != 2)
+		{
+			//cout<<"Error: At least one of the IDs is not in the array IDs."<<endl;
+			return ;
+		}
+		else
+		{
+			int *fathers1 = new int[];
+			int *fathers2 = new int[];
+			TreeNode *tempnode1 = new TreeNode;
+			TreeNode *tempnode2 = new TreeNode;
+			tempnode1 = search_node(root->firstchild,ID1);
+			tempnode2 = search_node(root->firstchild,ID2);
+			int k1 = 0;
+			int k2 = 0;
+			cout<<"Node ID in ID1's branch: ";
+			while(1)
+			{
+				fathers1[k1] = tempnode1->ID;
+				cout<<fathers1[k1]<<" ";
+				if(tempnode1->father != NULL)
+				{
+					tempnode1 = tempnode1->father;
+				}
+				else{break;}
+				k1++;
+			}
+			cout<<endl;
+			cout<<"Node ID in ID2's branch: ";
+			while(1)
+			{
+				fathers2[k2] = tempnode2->ID;
+				cout<<fathers2[k2]<<" ";
+				if(tempnode2->father != NULL)
+				{
+					tempnode2 = tempnode2->father;
+				}
+				else{break;}
+				k2++;
+			}
+			cout<<endl;
+
+			//find the cousin upper nodes
+			int flag = 0;
+			for(int m1=0;m1<sizeof(fathers1);m1++)
+			{
+				if(flag==0)
+				{
+					for(int m2=0;m2<sizeof(fathers2);m2++)
+					{
+						if(fathers1[m1]==fathers2[m2])
+						{
+							if(m1!=0 && m2!=0)
+							{
+								cout<<"ID1's branch "<<fathers1[m1-1]<<" and ID2's branch "<<fathers2[m2-1]<<" are the cousins."<<endl;
+								cout<<"They calculate the addition for "<<ID1<<" and "<<ID2<<endl;
+								flag = 1;
+							}
+							else
+							{
+								cout<<"ID1 and ID2 have already been in the same branch."<<endl;
+							}
+							break;
+						}
+					}
+				}
+				else{break;}
+			}
+		}
+	}
+	else
+	{
+		cout<<"Error: The same ID is not allowed."<<endl;
+	}
+}
+
 //make ID randomly from CA
 int Tree::Ini_CA_ID()
 {
@@ -281,9 +421,9 @@ int main()
 		root->nextsibling = NULL;
 		root->father = NULL;
 		root->data = ALL_DATA;
-		cout<<"We can draw the tree according to the information as followed according to the instruction."<<endl;
+		cout<<"We can draw the tree according to the information as followed."<<endl;
 		cout<<"Instruction: Add firstchild to the tree, as well as his siblingnodexs until the next firstchild."<<endl;
-		cout<<"-----------Tree based MPC-----------"<<endl;
+		cout<<"-----------Tree based MPC's construction-----------"<<endl;
 		//the core algorithm
 		T.AddNode(root,NodeSum);
 
@@ -294,7 +434,27 @@ int main()
 		}
 		cout<<endl;
 		cout<<"The tree has been structed."<<endl;
-		cout<<"-----------Tree based MPC-----------"<<endl;
+		cout<<"-----------Tree based MPC's construction-----------"<<endl<<endl;
+
+		//additon process
+		cout<<"-----------Tree based MPC's addition-----------"<<endl;
+		cout<<"Input 0 0 to exit."<<endl;
+		while(1)
+		{
+			cout<<"Input two IDs above to calculate the addition."<<endl;
+			int ID1,ID2;
+			cin>>ID1>>ID2;
+			if(ID1 == 0 && ID2 == 0)
+			{
+				cout<<"Successful exit."<<endl;
+				break;
+			}
+			else
+			{
+				T.Addition(root,ID1,ID2);
+				cout<<"-----------Tree based MPC's addition-----------"<<endl<<endl;
+			}
+		}
 	}
 	else
 	{
