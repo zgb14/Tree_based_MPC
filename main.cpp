@@ -18,6 +18,8 @@
 /*bug3 begin: Here must be "return NULL, the default is not NULL."
   bug2 end*/
 
+//Communication cost should be embodied in the simulation.
+
 //Bug log end
 
 #include<iostream>
@@ -37,8 +39,8 @@ int CA[N_max];
 //avoid duplicate IDs
 vector <int> IDs;
 //The number of Child is between ChildNum1 and ChildNum2.
-const int ChildNum1 = 2;
-const int ChildNum2 = 8;
+const int ChildNum1 = 2;//2 //NodeSum
+const int ChildNum2 = 8;//8 //NodeSum
 //the number of parties
 //const int NodeSum = 20;
 //all the data
@@ -86,6 +88,8 @@ void Tree::AddBrotherNode(TreeNode* bro, TreeNode* node)
 //Recursive spanning tree,evey subtree's root is responsible for allocating threshold(number) childnodes.
 void Tree::AddNode(TreeNode *fathernode,int threshold)
 {
+	//communication cost in the simulation
+	//Sleep(5);
 	int R_num = Ini_ChildNum();
 	if(R_num <= threshold)
 	{
@@ -316,6 +320,8 @@ void Tree::Addition(TreeNode *root,int ID1,int ID2)
 								cout<<"ID1's branch "<<fathers1[m1-1]<<" and ID2's branch "<<fathers2[m2-1]<<" are the cousins."<<endl;
 								cout<<"They calculate the addition for "<<ID1<<" and "<<ID2<<endl;
 								flag = 1;
+								//broadcast time cost 10ms
+								Sleep((m1+m2)*10);
 							}
 							else
 							{
@@ -473,7 +479,7 @@ int main()
 		}
 		*/
 		
-		int COUNT = 100;
+		int COUNT = 200;
 		int sleep_time = 10;
 		begin = clock();
 		for(int count=0;count<COUNT;count++)
