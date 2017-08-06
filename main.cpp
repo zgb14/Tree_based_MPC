@@ -27,17 +27,18 @@
 #include<string.h>
 #include<stdio.h>
 #include<fstream>
+#include<windows.h>
 using namespace std;
 
 //define the tree's capacity
-const int N_max = 1000;
+const int N_max = 100000;
 //IDs of parties registered in CA
 int CA[N_max];
 //avoid duplicate IDs
 vector <int> IDs;
 //The number of Child is between ChildNum1 and ChildNum2.
 const int ChildNum1 = 2;
-const int ChildNum2 = 4;
+const int ChildNum2 = 8;
 //the number of parties
 //const int NodeSum = 20;
 //all the data
@@ -377,6 +378,10 @@ void Tree::Initialization(TreeNode *node)
 int main()
 {
 	srand((unsigned)time(0));
+	//clock
+	clock_t start,finish;
+	double duration;
+	start = clock();
 	//IDs: the positive integer from 1 to N_max
 	for(int i=0;i<N_max;i++)
 	{
@@ -436,9 +441,16 @@ int main()
 		cout<<"The tree has been structed."<<endl;
 		cout<<"-----------Tree based MPC's construction-----------"<<endl<<endl;
 
+		finish = clock();
+		duration = (double)(finish-start)/CLOCKS_PER_SEC;
+		cout<<"Tree's constructing time: Duration of the process is "<<duration<<" seconds"<<endl;
+		
 		//additon process
+		clock_t begin,end;
+		double duration2;
 		cout<<"-----------Tree based MPC's addition-----------"<<endl;
 		cout<<"Input 0 0 to exit."<<endl;
+		/*
 		while(1)
 		{
 			cout<<"Input two IDs above to calculate the addition."<<endl;
@@ -447,7 +459,32 @@ int main()
 			if(ID1 == 0 && ID2 == 0)
 			{
 				cout<<"Successful exit."<<endl;
-				break;
+				//break;
+			}
+			else
+			{
+				begin = clock();
+				T.Addition(root,ID1,ID2);
+				end = clock();
+				duration2 = (double)(end-begin)/CLOCKS_PER_SEC;
+				cout<<"Tree's calculating time: Duration of the process is "<<duration2<<" seconds"<<endl;
+				cout<<"-----------Tree based MPC's addition-----------"<<endl<<endl;
+			}
+		}
+		*/
+		
+		int COUNT = 100;
+		int sleep_time = 10;
+		begin = clock();
+		for(int count=0;count<COUNT;count++)
+		{
+			int ID1 = IDs[rand()/NodeSum];
+			Sleep(sleep_time);
+			int ID2 = IDs[rand()/NodeSum];
+			if(ID1 == 0 && ID2 == 0)
+			{
+				cout<<"Successful exit."<<endl;
+				//break;
 			}
 			else
 			{
@@ -455,6 +492,9 @@ int main()
 				cout<<"-----------Tree based MPC's addition-----------"<<endl<<endl;
 			}
 		}
+		end = clock();
+		duration2 = (double)(end-begin)/CLOCKS_PER_SEC - (double)sleep_time/1000*COUNT;
+		cout<<"Tree's calculating time: Duration of the process is "<<duration2<<" seconds"<<endl;	
 	}
 	else
 	{
