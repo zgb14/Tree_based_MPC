@@ -39,8 +39,8 @@ int CA[N_max];
 //avoid duplicate IDs
 vector <int> IDs;
 //The number of Child is between ChildNum1 and ChildNum2.
-const int ChildNum1 = 2;//2 //NodeSum
-const int ChildNum2 = 8;//8 //NodeSum
+const int ChildNum1 = 1200;//2 //NodeSum
+const int ChildNum2 = 1200;//8 //NodeSum
 //the number of parties
 //const int NodeSum = 20;
 //all the data
@@ -89,7 +89,7 @@ void Tree::AddBrotherNode(TreeNode* bro, TreeNode* node)
 void Tree::AddNode(TreeNode *fathernode,int threshold)
 {
 	//communication cost in the simulation
-	//Sleep(5);
+	Sleep(10);
 	int R_num = Ini_ChildNum();
 	if(R_num <= threshold)
 	{
@@ -479,7 +479,7 @@ int main()
 		}
 		*/
 		
-		int COUNT = 200;
+		int COUNT = 200; //200,400,450,500,550,600,650,700,750,800
 		int sleep_time = 10;
 		begin = clock();
 		for(int count=0;count<COUNT;count++)
@@ -500,6 +500,7 @@ int main()
 		}
 		end = clock();
 		duration2 = (double)(end-begin)/CLOCKS_PER_SEC - (double)sleep_time/1000*COUNT;
+		//duration2 = (double)duration2/COUNT;
 		cout<<"Tree's calculating time: Duration of the process is "<<duration2<<" seconds"<<endl;	
 	}
 	else
